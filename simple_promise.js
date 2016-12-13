@@ -13,12 +13,15 @@ function co(generator) {
         let gen = generator();
         next(gen.next());
         function next(result) {
-            if (result.done)return resolve(result.value);//如果generator执行完毕，直接解决退出遍历
+            if (result.done)return resolve(result.value);
+            //调用generators后返回的是可遍历的迭代器，迭代器中next的方法返回的是一个对象{done:false,value:1}，
+            //对象的done属性的是布尔值表示遍历是否结束
+
             //判断是否是Promise，如果是promise则执行promise再进入next递归遍历generator.next
             if (isPromise(result.value))return result.value.then(res => {
                 let result;
                 try {
-                    result = gen.next(res); //抛出generator的错误
+                    result = gen.next(res);
                 }catch (e){
                     return reject(e);// 捕获后由交给promise处理返回外部处理
                 }
@@ -26,7 +29,7 @@ function co(generator) {
             }, err => {
                 let result;
                 try {
-                    result = gen.throw(err); //yield返回promise进入reject后的错误，抛出generator的错误
+                    result = gen.throw(err); //传入到生成器由内部捕获错误
                 }catch (e){
                     return reject(e); // 捕获后由交给promise处理返回外部处理
                 }

@@ -59,7 +59,7 @@ function co(gen) {
     }
 
     if (!gen || typeof gen.next !== 'function') {
-      //如果不是生成器，则直接解决
+      //如果不是生成器实例，则直接解决
         return resolve(gen)
     }
 
@@ -95,9 +95,9 @@ function co(gen) {
     function onRejected(err) {
       var ret;
       try {
-        ret = gen.throw(err); //抛出generator的 错误
+        ret = gen.throw(err); //传入到生成器由内部捕获错误
       } catch (e) {
-        return reject(e); // 捕获后由交给promise处理返回外部处理
+        return reject(e);
       }
       next(ret);
     }
